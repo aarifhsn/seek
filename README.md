@@ -1,4 +1,4 @@
-# JobBoard
+# SEEK
 
 The Job Search App allows users to search for job listings based on various filters such as salary range, job type, experience level, and date posted. Users can also search for jobs by keywords, categories, and tags. The app supports filtering job listings dynamically and displays the most relevant results based on user preferences. It also includes a pagination system to help users navigate through large amounts of data.
 
