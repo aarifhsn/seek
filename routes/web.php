@@ -10,7 +10,11 @@ use App\Http\Controllers\Job\JobController;
 use App\Http\Controllers\Rss\JobFeedController;
 use App\Http\Controllers\Rss\NewsController;
 use App\Http\Controllers\TagController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/browse-jobs', [JobController::class, 'viewJobs'])->name('job-lists');
 Route::get('/job-categories', [HomeController::class, 'jobCategories'])->name('job-categories');
-Route::get('/contact', fn () => view('contact'))->name('contact');
+Route::get('/contact', fn() => view('contact'))->name('contact');
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 Route::get('/jobs/rss', [JobFeedController::class, 'index'])->name('jobs.rss');
 Route::get('/jobs/rss-blog', [JobFeedController::class, 'blogInfo'])->name('jobs.rss-blog');
@@ -53,7 +57,9 @@ Route::get('/category/{slug}', [CategoryController::class, 'index'])->name('cate
 Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
 
 // Profile Route
-Route::get('/profile', fn () => view('profile'))->name('profile');
+
+Route::get('/profile', fn() => view('profile'))->middleware('auth', 'verified')->name('profile');
+
 
 // Company Routes
 // Route::get('/company/login', [CompanyController::class, 'showLoginForm'])->name('company.login');
@@ -63,7 +69,7 @@ Route::post('/company/register', [CompanyController::class, 'register']);
 
 // Routes for Authenticated Companies
 Route::middleware(['auth', 'company'])->group(function () {
-    Route::get('/company/dashboard', fn () => view('company.dashboard'))->name('company.dashboard');
+    Route::get('/company/dashboard', fn() => view('company.dashboard'))->name('company.dashboard');
     Route::get('/company/{slug}', [CompanyController::class, 'profile'])->name('company.profile');
 });
 
@@ -71,10 +77,28 @@ Route::middleware(['auth', 'company'])->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/candidates', [AdminController::class, 'candidates'])->name('admin.candidates');
-    Route::get('/admin/companies', [AdminController::class, 'companies'])->name('admin.companies');
     Route::post('/admin/companies/{id}/approve', [AdminController::class, 'approveCompany'])->name('admin.companies.approve');
 });
 
 // Placeholder Routes
-Route::get('/manage-jobs', fn () => view('manage-jobs'))->name('manage-jobs');
-Route::get('/manage-jobs-post', fn () => view('manage-jobs-post'))->name('manage-jobs-post');
+Route::get('/manage-jobs', fn() => view('manage-jobs'))->name('manage-jobs');
+Route::get('/manage-jobs-post', fn() => view('manage-jobs-post'))->name('manage-jobs-post');
+
+// Email Verification Routes
+Route::get('/email/verify', function () {
+    if (auth()->check() && auth()->user()->hasVerifiedEmail()) {
+        return redirect('/');
+    }
+
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/')->with('message', 'Email verified successfully!');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification email sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');

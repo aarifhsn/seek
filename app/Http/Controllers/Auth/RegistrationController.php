@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Auth\Events\Registered;
 
 class RegistrationController extends Controller
 {
@@ -16,14 +19,19 @@ class RegistrationController extends Controller
 
     public function store(RegisterRequest $request)
     {
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'remember_token' => Str::random(10),
         ]);
 
-        // redirect to home page
-        return redirect()->route('login')->with('success', __('messages.registration_success'));
+        Log::info('Dispatching Registered event for: ' . $user->email);
+        event(new Registered($user));
+
+        // Temporarily log in the user for few routes
+        auth()->login($user);
+
+        return redirect()->route('verification.notice')->with('message', 'Registration successful. Please check your email for verification.');
     }
 }

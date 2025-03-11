@@ -7,6 +7,7 @@ use App\Http\Requests\CompanyRegistrationRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Models\Company;
 use App\Models\User;
+use App\Notifications\NewCompanyRegistered;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -28,7 +29,7 @@ class CompanyController extends Controller
         ]);
 
         // Generate a unique slug for the company
-        $slug = Str::slug($request->name.'-'.uniqid(), '-');
+        $slug = Str::slug($request->name . '-' . uniqid(), '-');
 
         // Create the company record with minimal information (for registration)
         Company::create([

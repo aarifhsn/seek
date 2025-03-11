@@ -35,6 +35,9 @@
                 <div style="position: absolute; top: 5%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">
                     @if (session('success'))
                     <p class="text-green-800 font-semibold border border-solid border-green-500 p-4">{{ session('success') }}</p>
+
+                    @elseif (session('message'))
+                    <p class="text-red-800 font-semibold border border-solid border-red-500 p-4">{{ session('message') }}</p>
                     @endif
                 </div>
                 
