@@ -56,7 +56,7 @@ class CompanyResource extends Resource
                         'Education' => 'Education',
                     ])->nullable(),
                     TextInput::make('website')->url()->nullable(),
-                    FileUpload::make('logo')->image()->nullable(),
+                    FileUpload::make('logo')->avatar()->label('Company Logo')->disk('public')->nullable(),
                     TextInput::make('slug')->required()->unique(),
                 ]),
                 Section::make('Address Information')->schema([
@@ -85,7 +85,9 @@ class CompanyResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('logo')
-                    ->size(40),
+                    ->size(40)
+                    ->circular()
+                    ->defaultImageUrl('/images/favicon.ico'),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('contact_number')->sortable(),
