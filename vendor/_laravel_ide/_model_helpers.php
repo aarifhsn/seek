@@ -255,7 +255,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $deleted_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
-     * @property mixed $decline_reason
+     * @property mixed $rejection_reason
      * @property mixed $status
      * @property mixed $description
      * @property mixed $pincode
@@ -293,7 +293,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Company>|Company wherePincode($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Company>|Company whereDescription($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Company>|Company whereStatus($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<Company>|Company whereDeclineReason($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Company>|Company whereRejectionReason($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Company>|Company whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Company>|Company whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Company>|Company whereDeletedAt($value)
@@ -2548,6 +2548,9 @@ namespace App\Models {
     /**
      * App\Models\User
      *
+     * @property mixed $github_refresh_token
+     * @property mixed $github_token
+     * @property mixed $github_id
      * @property \Illuminate\Support\Carbon|null $deleted_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
@@ -2577,6 +2580,9 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereGithubId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereGithubToken($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<User>|User whereGithubRefreshToken($value)
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<User>|User query()

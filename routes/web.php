@@ -14,7 +14,9 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Controllers\Auth\GithubSocialiteController;
+use App\Models\User;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,7 +91,6 @@ Route::get('/email/verify', function () {
     if (auth()->check() && auth()->user()->hasVerifiedEmail()) {
         return redirect('/');
     }
-
     return view('auth.verify-email');
 })->middleware('auth')->name('verification.notice');
 
@@ -102,3 +103,30 @@ Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
     return back()->with('message', 'Verification email sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
+
+
+
+Route::get('/auth/github', function () {
+    return Socialite::driver('github')->redirect();
+})->name('github.login');
+Route::get('/auth/github/callback', function () {
+    $githubUser = Socialite::driver('github')->user();
+
+    // Check if user already exists
+    $user = User::where('email', $githubUser->getEmail())->first();
+
+    if (!$user) {
+        // Create a new user if not found
+        $user = User::create([
+            'name' => $githubUser->getName() ?? $githubUser->getNickname(),
+            'email' => $githubUser->getEmail(),
+            'password' => bcrypt(str()->random(16)), // Set random password since it's not used
+        ]);
+    }
+
+    // Log in the user
+    Auth::login($user);
+
+    return redirect('/dashboard'); // Redirect to desired page
+});

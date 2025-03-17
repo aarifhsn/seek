@@ -5,29 +5,20 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Models\Company;
-use App\Notifications\CompanyApprovalStatus;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\SelectColumn;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TrashedFilter;
-use App\Notifications\CompanyApproved;
-use Filament\Notifications\Notification as FilamentNotification;
-
 
 class CompanyResource extends Resource
 {
@@ -35,7 +26,6 @@ class CompanyResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static ?string $navigationGroup = 'Company Management';
     protected static ?int $navigationSort = 2;
-
     public static function form(Form $form): Form
     {
         return $form
@@ -75,11 +65,12 @@ class CompanyResource extends Resource
                         'approved' => 'Approved',
                         'rejected' => 'Rejected',
                     ])->default('pending'),
-                    Textarea::make('decline_reason')->nullable(),
+                    Forms\Components\Textarea::make('rejection_reason')
+                        ->visible(fn(callable $get) => $get('status') === 'rejected')
+                        ->placeholder('Provide a reason for rejection'),
                 ])
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -103,12 +94,41 @@ class CompanyResource extends Resource
                 TextColumn::make('created_at')->dateTime(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ]),
             ])
+
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Action::make('approve')
+                    ->visible(fn(Company $record) => $record->status === 'pending')
+                    ->color('success')
+                    ->icon('heroicon-o-check')
+                    ->action(function (Company $record) {
+                        $record->status = 'approved';
+                        $record->save();
+                    }),
+                Action::make('reject')
+                    ->visible(fn(Company $record) => $record->status === 'pending')
+                    ->color('danger')
+                    ->icon('heroicon-o-x-mark')
+                    ->modalHeading('Reject Company')
+                    ->modalSubheading('Please provide a reason for rejection')
+                    ->modalButton('Reject Company')
+                    ->form([
+                        Forms\Components\Textarea::make('rejection_reason')
+                            ->label('Reason for Rejection')
+                            ->required(),
+                    ])
+                    ->action(function (Company $record, array $data) {
+                        $record->status = 'rejected';
+                        $record->rejection_reason = $data['rejection_reason'];
+                        $record->save();
+                    }),
             ])
             ->bulkActions([
                 //
@@ -129,20 +149,5 @@ class CompanyResource extends Resource
             'create' => Pages\CreateCompany::route('/create'),
             'edit' => Pages\EditCompany::route('/{record}/edit'),
         ];
-    }
-
-    public function approveCompany($record)
-    {
-        $record->update(['status' => 'approved']);
-
-        // Notify Company via Email
-        $record->user->notify(new CompanyApproved($record));
-
-        // Notify Admins via Filament
-        FilamentNotification::make()
-            ->title('Company Approved')
-            ->body("The company **{$record->name}** has been approved.")
-            ->success()
-            ->send();
     }
 }

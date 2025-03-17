@@ -28,7 +28,7 @@ return new class extends Migration {
             $table->string('pincode')->nullable();
             $table->text('description')->nullable();
             $table->enum('status', ['active', 'inactive', 'pending', 'approved', 'rejected'])->default('pending');
-            $table->text('decline_reason')->nullable();
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

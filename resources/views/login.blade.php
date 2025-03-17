@@ -89,6 +89,10 @@
                                                 <div class="text-center">
                                                     <p class="text-white">Not a member ? <a href="{{route('register')}}" class="text-white underline fw-medium"> Register </a></p>
                                                 </div>
+
+                                                <a href="{{ route('github.login') }}" class="btn btn-dark">
+                                                    Login with GitHub
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
