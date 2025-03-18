@@ -48,14 +48,14 @@ class CompanyResource extends Resource
                     TextInput::make('website')->url()->nullable(),
                     FileUpload::make('logo')->avatar()->label('Company Logo')->disk('public')->nullable(),
                     TextInput::make('slug')->required()->unique(),
-                ]),
+                ])->collapsible(),
                 Section::make('Address Information')->schema([
                     TextInput::make('address')->nullable(),
                     TextInput::make('city')->nullable(),
                     TextInput::make('state')->nullable(),
                     TextInput::make('country')->nullable(),
                     TextInput::make('pincode')->nullable(),
-                ]),
+                ])->collapsed(),
                 Section::make('Additional Info')->schema([
                     Textarea::make('description')->nullable(),
                     Select::make('status')->options([
@@ -64,11 +64,12 @@ class CompanyResource extends Resource
                         'pending' => 'Pending',
                         'approved' => 'Approved',
                         'rejected' => 'Rejected',
-                    ])->default('pending'),
+                    ])->default('pending')
+                        ->reactive(),
                     Forms\Components\Textarea::make('rejection_reason')
                         ->visible(fn(callable $get) => $get('status') === 'rejected')
                         ->placeholder('Provide a reason for rejection'),
-                ])
+                ])->collapsed(),
             ]);
     }
     public static function table(Table $table): Table

@@ -121,7 +121,8 @@ Route::get('/auth/github/callback', function () {
         $user = User::create([
             'name' => $githubUser->getName() ?? $githubUser->getNickname(),
             'email' => $githubUser->getEmail(),
-            'password' => bcrypt(str()->random(16)), // Set random password since it's not used
+            'password' => bcrypt(str()->random(16)),// Set random password since it's not used
+            'email_verified_at' => now(),
         ]);
     }
 
