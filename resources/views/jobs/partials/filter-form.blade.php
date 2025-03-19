@@ -94,7 +94,7 @@
                             <label
                                 class="text-gray-500 cursor-pointer ltr:ml-2 rtl:mr-2 dark:text-gray-300" 
                                 for="{{$job_type->type}}">
-                                {{ucwords(str_replace('-', ' ', $job_type->type))}}
+                                {{ucwords(str_replace('-', ' ', $job_type->type->value))}}
                             </label>
                         </div>
                     @endforeach

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\StatusEnum;
+use App\Enums\CompanyStatus;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Models\Company;
@@ -60,11 +60,11 @@ class CompanyResource extends Resource
                 Section::make('Additional Info')->schema([
                     Textarea::make('description')->nullable(),
                     Select::make('status')
-                        ->options(StatusEnum::options())
-                        ->default(StatusEnum::PENDING->value)
+                        ->options(CompanyStatus::options())
+                        ->default(CompanyStatus::PENDING->value)
                         ->reactive(),
                     Forms\Components\Textarea::make('rejection_reason')
-                        ->visible(fn(callable $get) => $get('status') === StatusEnum::REJECTED->value)
+                        ->visible(fn(callable $get) => $get('status') === CompanyStatus::REJECTED->value)
                         ->placeholder('Provide a reason for rejection'),
                 ])->collapsed(),
             ]);
@@ -82,26 +82,26 @@ class CompanyResource extends Resource
                 TextColumn::make('contact_number')->sortable(),
                 TextColumn::make('city')->sortable(),
                 SelectColumn::make('status')
-                    ->options(StatusEnum::options()),
+                    ->options(CompanyStatus::options()),
                 TextColumn::make('created_at')->dateTime(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options(StatusEnum::options()),
+                    ->options(CompanyStatus::options()),
             ])
 
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Action::make('approve')
-                    ->visible(fn(Company $record) => $record->status === StatusEnum::PENDING)
+                    ->visible(fn(Company $record) => $record->status === CompanyStatus::PENDING)
                     ->color('success')
                     ->icon('heroicon-o-check')
                     ->action(function (Company $record) {
-                        $record->status = StatusEnum::APPROVED;
+                        $record->status = CompanyStatus::APPROVED;
                         $record->save();
                     }),
                 Action::make('reject')
-                    ->visible(fn(Company $record) => $record->status === StatusEnum::PENDING)
+                    ->visible(fn(Company $record) => $record->status === CompanyStatus::PENDING)
                     ->color('danger')
                     ->icon('heroicon-o-x-mark')
                     ->modalHeading('Reject Company')
@@ -113,7 +113,7 @@ class CompanyResource extends Resource
                             ->required(),
                     ])
                     ->action(function (Company $record, array $data) {
-                        $record->status = StatusEnum::REJECTED;
+                        $record->status = CompanyStatus::REJECTED;
                         $record->rejection_reason = $data['rejection_reason'];
                         $record->save();
                     }),

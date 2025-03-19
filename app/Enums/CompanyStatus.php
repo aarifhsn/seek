@@ -2,7 +2,9 @@
 
 namespace App\Enums;
 
-enum StatusEnum: string
+use Filament\Support\Contracts\HasLabel;
+
+enum CompanyStatus: string implements HasLabel
 {
     case ACTIVE = 'active';
     case INACTIVE = 'inactive';
@@ -46,7 +48,7 @@ enum StatusEnum: string
     public static function options(): array
     {
         return collect(self::cases())->mapWithKeys(
-            fn(StatusEnum $enum) => [$enum->value => $enum->getLabel()]
+            fn(CompanyStatus $enum) => [$enum->value => $enum->getLabel()]
         )->toArray();
     }
 }

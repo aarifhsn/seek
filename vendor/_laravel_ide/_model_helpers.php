@@ -256,7 +256,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property mixed $rejection_reason
-     * @property \App\Enums\StatusEnum $status
+     * @property \App\Enums\CompanyStatus $status
      * @property mixed $description
      * @property mixed $pincode
      * @property mixed $country
@@ -523,7 +523,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $deleted_at
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
-     * @property mixed $status
+     * @property \App\Enums\JobStatus $status
      * @property string|null $expiration_date
      * @property string|null $start_date
      * @property mixed $application_phone
@@ -535,7 +535,7 @@ namespace App\Models {
      * @property mixed $qualification
      * @property int $vacancy
      * @property mixed $slug
-     * @property mixed $type
+     * @property \App\Enums\JobType $type
      * @property mixed $experience
      * @property mixed $description
      * @property mixed $title

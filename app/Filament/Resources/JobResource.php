@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\JobStatus;
+use App\Enums\JobType;
 use App\Filament\Resources\JobResource\Pages;
 use App\Filament\Resources\JobResource\RelationManagers;
 use App\Models\Job;
@@ -12,6 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class JobResource extends Resource
 {
@@ -23,12 +26,29 @@ class JobResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('company_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('category_id')
-                    ->required()
-                    ->numeric(),
+                Forms\Components\Select::make('company_id')
+                    ->relationship('company', 'name')
+                    ->required(),
+                Forms\Components\Select::make('category_id')
+                    ->relationship('category', 'name')
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
+                        Forms\Components\TextInput::make('slug')
+                            ->required()
+                            ->dehydrated(true)
+                            ->disabled(),
+                    ])
+                    ->createOptionAction(
+                        fn(Forms\Components\Actions\Action $action) => $action
+                            ->mutateFormDataUsing(function (array $data) {
+                                $data['slug'] = Str::slug($data['name']);
+                                return $data;
+                            })
+                    )
+                    ->required(),
                 Forms\Components\TextInput::make('title')
                     ->required()
                     ->maxLength(255),
@@ -38,7 +58,8 @@ class JobResource extends Resource
                 Forms\Components\TextInput::make('experience')
                     ->maxLength(255)
                     ->default(null),
-                Forms\Components\TextInput::make('type')
+                Forms\Components\Select::make('type')
+                    ->options(JobType::class)
                     ->required(),
                 Forms\Components\TextInput::make('slug')
                     ->required()
@@ -72,7 +93,8 @@ class JobResource extends Resource
                     ->maxLength(255),
                 Forms\Components\DateTimePicker::make('start_date'),
                 Forms\Components\DateTimePicker::make('expiration_date'),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Select::make('status')
+                    ->options(JobStatus::class)
                     ->required(),
             ]);
     }
@@ -81,14 +103,13 @@ class JobResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('company_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
+
                 Tables\Columns\TextColumn::make('title')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('company.name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('category.name')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('experience')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type'),
@@ -159,4 +180,6 @@ class JobResource extends Resource
             'edit' => Pages\EditJob::route('/{record}/edit'),
         ];
     }
+
+
 }

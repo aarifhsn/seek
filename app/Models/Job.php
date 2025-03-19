@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\JobStatus;
+use App\Enums\JobType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,6 +29,11 @@ class Job extends Model
         'expiration_date',
         'status',
         'duration',
+    ];
+
+    protected $casts = [
+        'status' => JobStatus::class,
+        'type' => JobType::class,
     ];
 
     public function company()
@@ -71,9 +78,9 @@ class Job extends Model
 
     public function scopeSearch($query, $term)
     {
-        return $query->where('title', 'like', '%'.$term.'%')
+        return $query->where('title', 'like', '%' . $term . '%')
             ->orWhereHas('company', function ($q) use ($term) {
-                $q->where('name', 'like', '%'.$term.'%');
+                $q->where('name', 'like', '%' . $term . '%');
             });
     }
 
