@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\StatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -30,6 +31,10 @@ class Company extends Model
         'user_id',
     ];
 
+    protected $casts = [
+        'status' => StatusEnum::class,
+    ];
+
     public function socialLinks()
     {
         return $this->hasMany(SocialLink::class);
@@ -49,5 +54,7 @@ class Company extends Model
     {
         return $query->where('status', 'active');
     }
+
+
 
 }

@@ -256,7 +256,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property mixed $rejection_reason
-     * @property mixed $status
+     * @property \App\Enums\StatusEnum $status
      * @property mixed $description
      * @property mixed $pincode
      * @property mixed $country

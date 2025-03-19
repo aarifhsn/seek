@@ -26,7 +26,11 @@
                     <div class="area-range">
                         <label for="salary_range"
                             class="block mb-2 text-sm font-medium text-700 dark:text-white">
-                            Min Salary: <span id="range_value"> {{Number::currency( $minSalary )}}</span></label>
+                            Min Salary: <span id="range_value">
+                                @if (request('salary_range'))
+                                {{Number::currency( $minSalary )}}
+                                @endif    
+                            </span></label>
                         
                             <input id="salary_range" type="range" name="salary_range"  class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                             value="{{ $minSalary }}" min="{{ $minSalary }}" max="{{ $maxSalary }}" step="100"
