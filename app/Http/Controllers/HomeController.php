@@ -15,7 +15,11 @@ class HomeController extends Controller
         // Fetch jobs for each job type
         $jobsByType = [];
         foreach ($jobTypes as $type) {
-            $jobsByType[$type] = Job::where('type', $type)
+
+            // Convert enum to string key
+            $typeKey = $type->value;
+
+            $jobsByType[$typeKey] = Job::where('type', $type)
                 ->with('tag', 'category', 'company')
                 ->orderBy('created_at', 'desc')
                 ->take(10)

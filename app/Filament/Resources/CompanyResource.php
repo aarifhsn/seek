@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Enums\CompanyStatus;
+use App\Enums\CompanyType;
 use App\Filament\Resources\CompanyResource\Pages;
 use App\Filament\Resources\CompanyResource\RelationManagers;
 use App\Models\Company;
@@ -17,6 +18,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\SelectColumn;
@@ -78,6 +80,12 @@ class CompanyResource extends Resource
                     ->circular()
                     ->defaultImageUrl('/images/favicon.ico'),
                 TextColumn::make('name')->sortable()->searchable(),
+                TextColumn::make('subscription_type')
+                    ->label('Company Type')
+                    ->icon(
+                        'heroicon-s-check-badge',
+                    )
+                    ->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('contact_number')->sortable(),
                 TextColumn::make('city')->sortable(),

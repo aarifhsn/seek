@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('email')->unique();
+            $table->enum('subscription_type', ['free', 'premium'])->default('free');
             $table->string('contact_number');
             $table->string('industry')->nullable();
             $table->string('website')->nullable();
